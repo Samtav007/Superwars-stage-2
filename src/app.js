@@ -26,14 +26,15 @@ const initPlayers = (players) => {
   let detailedPlayers = [];
   // Create players using for loop
   // Type your code here
-  const initPlayers = players.map((player, index) => ({
-    name: player,
-    strength: 2 + index,
-    image: `images/super-${index + 1}.png`,
-    type: index % 2 === 0 ? 'hero' : 'villain',
-    id: index + 1,
-  }));
-  
+  players.forEach((player, index) => {
+    detailedPlayers.push({
+      name: player,
+      strength: 2 + index,
+      image: 'images/super-' + (index + 1) + '.png',
+      type: index % 2 == 0 ? 'hero' : 'villain',
+      id: index + 1,
+    });
+  });
   return detailedPlayers;
 };
 
@@ -44,24 +45,28 @@ const getRandomStrength = () => {
   return Math.ceil(Math.random() * 100);
 };
 
-const view = ({ image, name, strength }) => {
-  const player = document.createElement('div');
+const view = (playerObj) => {
+  let player = document.createElement('div');
   player.classList.add('player');
-  player.innerHTML = `
-    <img src="${image}" alt="">
-    <div class="name">${name}</div>
-    <div class="strength">${strength}</div>
-  `;
+  let image = document.createElement('img');
+  image.setAttribute('src', playerObj.image);
+  image.setAttribute('alt', '');
+  let name = document.createElement('div');
+  name.className = 'name';
+  name.textContent = playerObj.name;
+  let strength = document.createElement('div');
+  strength.textContent = playerObj.strength;
+  strength.className = 'strength';
+  player.append(image, name, strength);
   return player;
 };
 
-
 const buildPlayers = (players, type) => {
-  return players
+  let fragment = document.createElement('div');
+  players
     .filter((player) => player.type == type)
-    .map((player) => view(player))
-    .join('');
-};
+    .forEach((player) => fragment.append(view(player)));
+  return fragment.innerHTML;
 
   // Loop through players and accumulate HTML template
   // depending of type of player(hero|villain)
@@ -69,12 +74,13 @@ const buildPlayers = (players, type) => {
 };
 // Display players in HTML
 const viewPlayers = (players) => {
-
-    document.getElementById('heroes').innerHTML = buildPlayers(players, 'hero');
-    document.getElementById('villains').innerHTML = buildPlayers(players, 'villain');
-
-}
+  document.getElementById('heroes').innerHTML = buildPlayers(players, 'hero');
+  document.getElementById('villains').innerHTML = buildPlayers(
+    players,
+    'villain'
+  );
+};
 
 window.onload = () => {
-    viewPlayers(initPlayers(PLAYERS));
-}
+  viewPlayers(initPlayers(PLAYERS));
+};
